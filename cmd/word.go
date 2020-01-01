@@ -18,7 +18,6 @@ const (
 
 var str string
 var mode int8
-
 var desc = strings.Join([]string{
 	"该子命令支持各种单词格式转换，模式如下：",
 	"1：全部转大写",
