@@ -1,7 +1,6 @@
 package word
 
 import (
-	"log"
 	"strings"
 	"unicode"
 )
@@ -29,7 +28,6 @@ func CamelCaseToUnderscore(s string) string {
 	var output []rune
 	var segment []rune
 	for _, r := range s {
-		log.Printf("%v", string(r))
 		if !unicode.IsLower(r) && string(r) != "_" && !unicode.IsNumber(r) {
 			output = addSegment(output, segment)
 			segment = nil
