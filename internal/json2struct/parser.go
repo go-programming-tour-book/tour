@@ -20,7 +20,6 @@ type Parser struct {
 	Children   Output
 	StructTag  string
 	StructName string
-	FieldSpace string
 }
 
 type Output []string

@@ -3,7 +3,7 @@ package cmd
 import (
 	"log"
 
-	"github.com/go-programming-tour-book/tour/internal/json/json2struct"
+	"github.com/go-programming-tour-book/tour/internal/json2struct"
 
 	"github.com/spf13/cobra"
 )

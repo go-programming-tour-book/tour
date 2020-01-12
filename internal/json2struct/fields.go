@@ -6,11 +6,6 @@ import (
 	"github.com/go-programming-tour-book/tour/internal/word"
 )
 
-type Field struct {
-	Name string
-	Type string
-}
-
 type FieldSegment struct {
 	Format      string
 	FieldValues []FieldValue
@@ -19,6 +14,11 @@ type FieldSegment struct {
 type FieldValue struct {
 	CamelCase bool
 	Value     string
+}
+
+type Field struct {
+	Name string
+	Type string
 }
 
 type Fields []*Field
