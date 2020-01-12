@@ -20,7 +20,6 @@ var json2structCmd = &cobra.Command{
 	Short: "json转换",
 	Long:  "json转换",
 	Run: func(cmd *cobra.Command, args []string) {
-		log.Println(str)
 		parser, err := json2struct.NewParser(str)
 		if err != nil {
 			log.Fatalf("json2struct.NewParser err: %v", err)
