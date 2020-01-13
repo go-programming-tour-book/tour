@@ -52,13 +52,13 @@ func NewParser(s string) (*Parser, error) {
 
 func (p *Parser) Json2Struct() string {
 	p.Output.appendSegment(p.StructTag, p.StructName)
-	for sourceName, sourceValue := range p.Source {
-		valueType := reflect.TypeOf(sourceValue).String()
+	for parentName, parentValues := range p.Source {
+		valueType := reflect.TypeOf(parentValues).String()
 		if valueType == TYPE_INTERFACE {
-			p.toParentList(sourceName, sourceValue.([]interface{}), true)
+			p.toParentList(parentName, parentValues.([]interface{}), true)
 		} else {
 			var fields Fields
-			fields.appendSegment(sourceName, FieldSegment{
+			fields.appendSegment(parentName, FieldSegment{
 				Format: "%s",
 				FieldValues: []FieldValue{
 					{CamelCase: false, Value: valueType},
@@ -79,53 +79,69 @@ func (p *Parser) toChildrenStruct(parentName string, values interface{}) {
 	p.Children.appendSuffix()
 }
 
-func (p *Parser) toParentList(parentName string, values []interface{}, isParent bool) {
+func (p *Parser) toParentList(parentName string, parentValues []interface{}, isTop bool) {
 	var fields Fields
-	for _, v := range values {
+	for _, v := range parentValues {
 		valueType := reflect.TypeOf(v).String()
 		if valueType == TYPE_MAP_STRING_INTERFACE {
-			for fieldName, fieldValues := range v.(map[string]interface{}) {
-				var (
-					fieldValueType = reflect.TypeOf(fieldValues).String()
-					fieldSegment   = FieldSegment{
-						Format: "%s",
-						FieldValues: []FieldValue{
-							{CamelCase: true, Value: fieldValueType},
-						},
-					}
-				)
-				switch fieldValueType {
-				case TYPE_INTERFACE:
-					p.toParentList(fieldName, fieldValues.([]interface{}), false)
-					fieldSegment.Format = "%s%s"
-					fieldSegment.FieldValues = []FieldValue{
-						{CamelCase: false, Value: "[]"},
-						{CamelCase: true, Value: fieldName},
-					}
-				case TYPE_MAP_STRING_INTERFACE:
-					p.toChildrenStruct(fieldName, fieldValues)
-					fieldSegment.Format = "%s"
-					fieldSegment.FieldValues = []FieldValue{
-						{CamelCase: true, Value: fieldName},
-					}
-				}
-
-				fields.appendSegment(fieldName, fieldSegment)
-			}
-
+			fields = append(fields, p.handleParentTypeMapIface(v.(map[string]interface{}))...)
 			p.Children.appendSegment(p.StructTag, parentName)
 			for _, field := range fields.removeDuplicate() {
 				p.Children.appendSegment("%s %s", field.Name, field.Type)
 			}
 			p.Children.appendSuffix()
-			if isParent {
+			if isTop {
 				valueType = word.UnderscoreToUpperCamelCase(parentName)
 			}
 		}
 
-		if isParent {
+		if isTop {
 			p.Output.appendSegment("%s %s%s", parentName, "[]", valueType)
 		}
 		break
 	}
+}
+
+func (p *Parser) handleParentTypeMapIface(values map[string]interface{}) Fields {
+	var fields Fields
+	for fieldName, fieldValues := range values {
+		var fieldValueType = reflect.TypeOf(fieldValues).String()
+		var fieldSegment = FieldSegment{
+			Format:      "%s",
+			FieldValues: []FieldValue{{CamelCase: true, Value: fieldValueType}},
+		}
+		switch fieldValueType {
+		case TYPE_INTERFACE:
+			fieldSegment = p.handleTypeIface(fieldName, fieldValues.([]interface{}))
+		case TYPE_MAP_STRING_INTERFACE:
+			fieldSegment = p.handleTypeMapIface(fieldName, fieldValues.([]interface{}))
+		}
+
+		fields.appendSegment(fieldName, fieldSegment)
+	}
+
+	return fields
+}
+
+func (p *Parser) handleTypeIface(fieldName string, fieldValues []interface{}) FieldSegment {
+	fieldSegment := FieldSegment{
+		Format: "%s%s",
+		FieldValues: []FieldValue{
+			{CamelCase: false, Value: "[]"},
+			{CamelCase: true, Value: fieldName},
+		},
+	}
+	p.toParentList(fieldName, fieldValues, false)
+	return fieldSegment
+}
+
+func (p *Parser) handleTypeMapIface(fieldName string, fieldValues []interface{}) FieldSegment {
+	fieldSegment := FieldSegment{
+		Format: "%s",
+		FieldValues: []FieldValue{
+			{CamelCase: true, Value: fieldName},
+		},
+	}
+	p.toChildrenStruct(fieldName, fieldValues)
+	return fieldSegment
 }
