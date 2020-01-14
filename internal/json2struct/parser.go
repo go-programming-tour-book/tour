@@ -71,9 +71,9 @@ func (p *Parser) Json2Struct() string {
 	return strings.Join(append(p.Output, p.Children...), "\n")
 }
 
-func (p *Parser) toChildrenStruct(parentName string, values interface{}) {
+func (p *Parser) toChildrenStruct(parentName string, values map[string]interface{}) {
 	p.Children.appendSegment(p.StructTag, parentName)
-	for fieldName, fieldValue := range values.(map[string]interface{}) {
+	for fieldName, fieldValue := range values {
 		p.Children.appendSegment("%s %s", fieldName, reflect.TypeOf(fieldValue).String())
 	}
 	p.Children.appendSuffix()
@@ -114,7 +114,7 @@ func (p *Parser) handleParentTypeMapIface(values map[string]interface{}) Fields 
 		case TYPE_INTERFACE:
 			fieldSegment = p.handleTypeIface(fieldName, fieldValues.([]interface{}))
 		case TYPE_MAP_STRING_INTERFACE:
-			fieldSegment = p.handleTypeMapIface(fieldName, fieldValues.([]interface{}))
+			fieldSegment = p.handleTypeMapIface(fieldName, fieldValues.(map[string]interface{}))
 		}
 
 		fields.appendSegment(fieldName, fieldSegment)
@@ -135,7 +135,7 @@ func (p *Parser) handleTypeIface(fieldName string, fieldValues []interface{}) Fi
 	return fieldSegment
 }
 
-func (p *Parser) handleTypeMapIface(fieldName string, fieldValues []interface{}) FieldSegment {
+func (p *Parser) handleTypeMapIface(fieldName string, fieldValues map[string]interface{}) FieldSegment {
 	fieldSegment := FieldSegment{
 		Format: "%s",
 		FieldValues: []FieldValue{
