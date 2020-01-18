@@ -32,14 +32,12 @@ type TableColumn struct {
 
 var DBTypeToStructType = map[string]string{
 	"int":        "int32",
-	"integer":    "int32",
 	"tinyint":    "int8",
 	"smallint":   "int",
 	"mediumint":  "int64",
 	"bigint":     "int64",
 	"bit":        "int",
 	"bool":       "bool",
-	"boolean":    "bool",
 	"enum":       "string",
 	"set":        "string",
 	"varchar":    "string",
@@ -82,7 +80,9 @@ func (m *DBModel) Connect() error {
 }
 
 func (m *DBModel) GetColumns(dbName, tableName string) ([]*TableColumn, error) {
-	query := "SELECT COLUMN_NAME, DATA_TYPE, COLUMN_KEY, IS_NULLABLE, COLUMN_TYPE, COLUMN_COMMENT FROM COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME= ? "
+	query := "SELECT " +
+		"COLUMN_NAME, DATA_TYPE, COLUMN_KEY, IS_NULLABLE, COLUMN_TYPE, COLUMN_COMMENT " +
+		"FROM COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? "
 	rows, err := m.DBEngine.Query(query, dbName, tableName)
 	if err != nil {
 		return nil, err

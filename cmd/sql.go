@@ -7,6 +7,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var username string
+var password string
+var host string
+var charset string
+var dbType string
+var dbName string
+var tableName string
+
 var sqlCmd = &cobra.Command{
 	Use:   "sql",
 	Short: "sql转换和处理",
@@ -19,13 +27,8 @@ var sql2structCmd = &cobra.Command{
 	Short: "sql转换",
 	Long:  "sql转换",
 	Run: func(cmd *cobra.Command, args []string) {
-		dbModel := sql2strcut.NewDBModel(&sql2strcut.DBInfo{
-			DBType:   dbType,
-			Host:     host,
-			UserName: username,
-			Password: password,
-			Charset:  charset,
-		})
+		dbInfo := &sql2strcut.DBInfo{DBType: dbType, Host: host, UserName: username, Password: password, Charset: charset}
+		dbModel := sql2strcut.NewDBModel(dbInfo)
 		err := dbModel.Connect()
 		if err != nil {
 			log.Fatalf("dbModel.Connect err: %v", err)
@@ -44,16 +47,7 @@ var sql2structCmd = &cobra.Command{
 	},
 }
 
-var username string
-var password string
-var host string
-var charset string
-var dbType string
-var dbName string
-var tableName string
-
 func init() {
-	rootCmd.AddCommand(sqlCmd)
 	sqlCmd.AddCommand(sql2structCmd)
 	sql2structCmd.Flags().StringVarP(&username, "username", "", "", "请输入数据库的账号")
 	sql2structCmd.Flags().StringVarP(&password, "password", "", "", "请输入数据库的密码")

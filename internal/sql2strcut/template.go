@@ -1,18 +1,19 @@
 package sql2strcut
 
 import (
+	"fmt"
 	"os"
 	"text/template"
 
 	"github.com/go-programming-tour-book/tour/internal/word"
 )
 
-const strcutTpl = `type {{.TableName | UnderscoreToUpperCamelCase}}Model struct {
+const strcutTpl = `type {{.TableName | ToCamelCase}} struct {
 {{range .Columns}}	{{ $length := len .Comment}} {{ if gt $length 0 }}// {{.Comment}} {{else}}// {{.Name}} {{ end }}
-	{{ $tLen := len .Type }} {{ if gt $tLen 0 }}{{.Name | UnderscoreToUpperCamelCase}}	{{.Type}}	{{.Tag}}{{ else }}{{.Name}}{{ end }}
+	{{ $typeLen := len .Type }} {{ if gt $typeLen 0 }}{{.Name | ToCamelCase}}	{{.Type}}	{{.Tag}}{{ else }}{{.Name}}{{ end }}
 {{end}}}
 
-func (model {{.TableName | UnderscoreToUpperCamelCase}}) TableName() string {
+func (model {{.TableName | ToCamelCase}}) TableName() string {
 	return "{{.TableName}}"
 }`
 
@@ -42,16 +43,17 @@ func (t *StructTemplate) AssemblyColumns(tbColumns []*TableColumn) []*StructColu
 		tplColumns = append(tplColumns, &StructColumn{
 			Name:    column.ColumnName,
 			Type:    DBTypeToStructType[column.DataType],
-			Tag:     "`json:\"" + column.ColumnName + "\"`",
+			Tag:     fmt.Sprintf("`json:"+"%s"+"`", column.ColumnName),
 			Comment: column.ColumnComment,
 		})
 	}
+
 	return tplColumns
 }
 
 func (t *StructTemplate) Generate(tableName string, tplColumns []*StructColumn) error {
 	tpl := template.Must(template.New("sql2struct").Funcs(template.FuncMap{
-		"UnderscoreToUpperCamelCase": word.UnderscoreToUpperCamelCase,
+		"ToCamelCase": word.UnderscoreToUpperCamelCase,
 	}).Parse(t.strcutTpl))
 
 	tplDB := StructTemplateDB{
