@@ -87,10 +87,10 @@ func (m *DBModel) GetColumns(dbName, tableName string) ([]*TableColumn, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 	if rows == nil {
 		return nil, errors.New("没有数据")
 	}
+	defer rows.Close()
 
 	var columns []*TableColumn
 	for rows.Next() {
