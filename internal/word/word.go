@@ -26,25 +26,15 @@ func UnderscoreToLowerCamelCase(s string) string {
 
 func CamelCaseToUnderscore(s string) string {
 	var output []rune
-	var segment []rune
-	for _, r := range s {
-		if !unicode.IsLower(r) && string(r) != "_" && !unicode.IsNumber(r) {
-			output = addSegment(output, segment)
-			segment = nil
+	for i, r := range s {
+		if i == 0 {
+			output = append(output, unicode.ToLower(r))
+			continue
 		}
-		segment = append(segment, unicode.ToLower(r))
+		if unicode.IsUpper(r) {
+			output = append(output, '_')
+		}
+		output = append(output, unicode.ToLower(r))
 	}
-	output = addSegment(output, segment)
 	return string(output)
-}
-
-func addSegment(inrune, segment []rune) []rune {
-	if len(segment) == 0 {
-		return inrune
-	}
-	if len(inrune) != 0 {
-		inrune = append(inrune, '_')
-	}
-	inrune = append(inrune, segment...)
-	return inrune
 }
