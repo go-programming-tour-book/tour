@@ -42,8 +42,12 @@ var calculateTimeCmd = &cobra.Command{
 			currentTimer = timer.GetNowTime()
 		} else {
 			var err error
-			if !strings.Contains(calculateTime, " ") {
+			space := strings.Count(calculateTime, " ")
+			if space == 0 {
 				layout = "2006-01-02"
+			}
+			if space == 1 {
+				layout = "2006-01-02 15:04"
 			}
 			currentTimer, err = time.Parse(layout, calculateTime)
 			if err != nil {
