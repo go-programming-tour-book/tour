@@ -27,11 +27,7 @@ func UnderscoreToLowerCamelCase(s string) string {
 func CamelCaseToUnderscore(s string) string {
 	var output []rune
 	for i, r := range s {
-		if i == 0 {
-			output = append(output, unicode.ToLower(r))
-			continue
-		}
-		if unicode.IsUpper(r) {
+		if i > 0 && unicode.IsUpper(r) {
 			output = append(output, '_')
 		}
 		output = append(output, unicode.ToLower(r))
