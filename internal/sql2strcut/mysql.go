@@ -64,8 +64,10 @@ func NewDBModel(info *DBInfo) *DBModel {
 
 func (m *DBModel) Connect() error {
 	var err error
+	s := "%s:%s@tcp(%s)/information_schema?" +
+		"charset=%s&parseTime=True&loc=Local"
 	dsn := fmt.Sprintf(
-		"%s:%s@tcp(%s)/information_schema?charset=%s&parseTime=True&loc=Local",
+		s,
 		m.DBInfo.UserName,
 		m.DBInfo.Password,
 		m.DBInfo.Host,
