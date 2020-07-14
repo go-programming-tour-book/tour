@@ -43,7 +43,7 @@ func (t *StructTemplate) AssemblyColumns(tbColumns []*TableColumn) []*StructColu
 		tplColumns = append(tplColumns, &StructColumn{
 			Name:    column.ColumnName,
 			Type:    DBTypeToStructType[column.DataType],
-			Tag:     fmt.Sprintf("`json:"+"%s"+"`", column.ColumnName),
+			Tag:     fmt.Sprintf("`"+"json:"+"\"%s\""+"`", column.ColumnName),
 			Comment: column.ColumnComment,
 		})
 	}
