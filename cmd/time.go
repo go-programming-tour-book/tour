@@ -47,12 +47,14 @@ var calculateTimeCmd = &cobra.Command{
 				layout = "2006-01-02"
 			}
 			if space == 1 {
-				layout = "2006-01-02 15:04"
+				layout = "2006-01-02 15:04:05"
 			}
 			currentTimer, err = time.Parse(layout, calculateTime)
+			// 如果 err != nil 说明传入的是时间戳
 			if err != nil {
 				t, _ := strconv.Atoi(calculateTime)
 				currentTimer = time.Unix(int64(t), 0)
+				layout = "2006-01-02 15:04:05"
 			}
 		}
 		calculateTime, err := timer.GetCalculateTime(currentTimer, duration)
@@ -69,5 +71,5 @@ func init() {
 	timeCmd.AddCommand(calculateTimeCmd)
 
 	calculateTimeCmd.Flags().StringVarP(&calculateTime, "calculate", "c", "", `需要计算的时间，有效单位为时间戳或已格式化后的时间`)
-	calculateTimeCmd.Flags().StringVarP(&duration, "duration", "d", "", `持续时间，有效时间单位为"ns", "us" (or "µs"), "ms", "s", "m", "h"`)
+	calculateTimeCmd.Flags().StringVarP(&duration, "duration", "d", "0s", `持续时间，有效时间单位为"ns", "us" (or "µs"), "ms", "s", "m", "h"`)
 }
