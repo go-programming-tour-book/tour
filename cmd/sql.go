@@ -27,7 +27,13 @@ var sql2structCmd = &cobra.Command{
 	Short: "sql转换",
 	Long:  "sql转换",
 	Run: func(cmd *cobra.Command, args []string) {
-		dbInfo := &sql2strcut.DBInfo{DBType: dbType, Host: host, UserName: username, Password: password, Charset: charset}
+		dbInfo := &sql2strcut.DBInfo{
+			DBType:   dbType,
+			Host:     host,
+			UserName: username,
+			Password: password,
+			Charset:  charset,
+		}
 		dbModel := sql2strcut.NewDBModel(dbInfo)
 		err := dbModel.Connect()
 		if err != nil {
