@@ -1,8 +1,11 @@
 package sql2strcut
 
 import (
+	"bytes"
 	"fmt"
+	"go/format"
 	"os"
+	"strings"
 	"text/template"
 
 	"github.com/go-programming-tour-book/tour/internal/word"
@@ -43,7 +46,7 @@ func (t *StructTemplate) AssemblyColumns(tbColumns []*TableColumn) []*StructColu
 		tplColumns = append(tplColumns, &StructColumn{
 			Name:    column.ColumnName,
 			Type:    DBTypeToStructType[column.DataType],
-			Tag:     fmt.Sprintf("`json:"+"%s"+"`", column.ColumnName),
+			Tag:     fmt.Sprintf("`json:%q`", column.ColumnName),
 			Comment: column.ColumnComment,
 		})
 	}
@@ -60,10 +63,17 @@ func (t *StructTemplate) Generate(tableName string, tplColumns []*StructColumn) 
 		TableName: tableName,
 		Columns:   tplColumns,
 	}
-	err := tpl.Execute(os.Stdout, tplDB)
+	source := new(bytes.Buffer)
+	if err := tpl.Execute(source, tplDB); err != nil {
+		return err
+	}
+
+	content, err := format.Source(source.Bytes())
 	if err != nil {
 		return err
 	}
+
+	_, err = fmt.Fprint(os.Stdout, strings.Replace(string(content), "&#34;", "\"", -1))
 
 	return nil
 }
