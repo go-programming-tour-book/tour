@@ -55,12 +55,12 @@ var calculateTimeCmd = &cobra.Command{
 				currentTimer = time.Unix(int64(t), 0)
 			}
 		}
-		calculateTime, err := timer.GetCalculateTime(currentTimer, duration)
+		t, err := timer.GetCalculateTime(currentTimer, duration)
 		if err != nil {
 			log.Fatalf("timer.GetCalculateTime err: %v", err)
 		}
 
-		log.Printf("输出结果: %s, %d", calculateTime.Format(layout), calculateTime.Unix())
+		log.Printf("输出结果: %s, %d", t.Format(layout), t.Unix())
 	},
 }
 

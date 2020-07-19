@@ -43,10 +43,11 @@ func NewStructTemplate() *StructTemplate {
 func (t *StructTemplate) AssemblyColumns(tbColumns []*TableColumn) []*StructColumn {
 	tplColumns := make([]*StructColumn, 0, len(tbColumns))
 	for _, column := range tbColumns {
+		tag := fmt.Sprintf("`json:%q`", column.ColumnName)
 		tplColumns = append(tplColumns, &StructColumn{
 			Name:    column.ColumnName,
 			Type:    DBTypeToStructType[column.DataType],
-			Tag:     fmt.Sprintf("`json:%q`", column.ColumnName),
+			Tag:     tag,
 			Comment: column.ColumnComment,
 		})
 	}
