@@ -75,6 +75,9 @@ func (t *StructTemplate) Generate(tableName string, tplColumns []*StructColumn) 
 	}
 
 	_, err = fmt.Fprint(os.Stdout, strings.Replace(string(content), "&#34;", "\"", -1))
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
