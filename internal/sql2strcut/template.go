@@ -43,6 +43,7 @@ func NewStructTemplate() *StructTemplate {
 func (t *StructTemplate) AssemblyColumns(tbColumns []*TableColumn) []*StructColumn {
 	tplColumns := make([]*StructColumn, 0, len(tbColumns))
 	for _, column := range tbColumns {
+		// tag值使用双引号包括
 		tag := fmt.Sprintf("`json:%q`", column.ColumnName)
 		tplColumns = append(tplColumns, &StructColumn{
 			Name:    column.ColumnName,
@@ -68,12 +69,12 @@ func (t *StructTemplate) Generate(tableName string, tplColumns []*StructColumn) 
 	if err := tpl.Execute(source, tplDB); err != nil {
 		return err
 	}
-
+	// 使用format对源代码进行格式化，相当于gofmt的作用
 	content, err := format.Source(source.Bytes())
 	if err != nil {
 		return err
 	}
-
+	// tag值中的双引号被转义，输出之前进行替换
 	_, err = fmt.Fprint(os.Stdout, strings.Replace(string(content), "&#34;", "\"", -1))
 	if err != nil {
 		return err
