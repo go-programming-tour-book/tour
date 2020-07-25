@@ -3,7 +3,7 @@ package cmd
 import (
 	"log"
 
-	"github.com/go-programming-tour-book/tour/internal/sql2strcut"
+	"github.com/go-programming-tour-book/tour/internal/sql2struct"
 	"github.com/spf13/cobra"
 )
 
@@ -27,14 +27,14 @@ var sql2structCmd = &cobra.Command{
 	Short: "sql转换",
 	Long:  "sql转换",
 	Run: func(cmd *cobra.Command, args []string) {
-		dbInfo := &sql2strcut.DBInfo{
+		dbInfo := &sql2struct.DBInfo{
 			DBType:   dbType,
 			Host:     host,
 			UserName: username,
 			Password: password,
 			Charset:  charset,
 		}
-		dbModel := sql2strcut.NewDBModel(dbInfo)
+		dbModel := sql2struct.NewDBModel(dbInfo)
 		err := dbModel.Connect()
 		if err != nil {
 			log.Fatalf("dbModel.Connect err: %v", err)
@@ -44,7 +44,7 @@ var sql2structCmd = &cobra.Command{
 			log.Fatalf("dbModel.GetColumns err: %v", err)
 		}
 
-		template := sql2strcut.NewStructTemplate()
+		template := sql2struct.NewStructTemplate()
 		templateColumns := template.AssemblyColumns(columns)
 		err = template.Generate(tableName, templateColumns)
 		if err != nil {

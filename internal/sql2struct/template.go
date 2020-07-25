@@ -1,4 +1,4 @@
-package sql2strcut
+package sql2struct
 
 import (
 	"fmt"
