@@ -42,7 +42,7 @@ var calculateTimeCmd = &cobra.Command{
 			currentTimer = timer.GetNowTime()
 		} else {
 			var err error
-			space := strings.Count(calculateTime, " ")
+			space := strings.Count(calculateTime, ":")
 			if space == 0 {
 				layout = "2006-01-02"
 			}
