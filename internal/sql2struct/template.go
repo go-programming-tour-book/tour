@@ -8,7 +8,7 @@ import (
 	"github.com/go-programming-tour-book/tour/internal/word"
 )
 
-const strcutTpl = `type {{.TableName | ToCamelCase}} struct {
+const structTpl = `type {{.TableName | ToCamelCase}} struct {
 {{range .Columns}}	{{ $length := len .Comment}} {{ if gt $length 0 }}// {{.Comment}} {{else}}// {{.Name}} {{ end }}
 	{{ $typeLen := len .Type }} {{ if gt $typeLen 0 }}{{.Name | ToCamelCase}}	{{.Type}}	{{.Tag}}{{ else }}{{.Name}}{{ end }}
 {{end}}}
@@ -18,7 +18,7 @@ func (model {{.TableName | ToCamelCase}}) TableName() string {
 }`
 
 type StructTemplate struct {
-	strcutTpl string
+	structTpl string
 }
 
 type StructColumn struct {
@@ -34,7 +34,7 @@ type StructTemplateDB struct {
 }
 
 func NewStructTemplate() *StructTemplate {
-	return &StructTemplate{strcutTpl: strcutTpl}
+	return &StructTemplate{structTpl: structTpl}
 }
 
 func (t *StructTemplate) AssemblyColumns(tbColumns []*TableColumn) []*StructColumn {
@@ -55,7 +55,7 @@ func (t *StructTemplate) AssemblyColumns(tbColumns []*TableColumn) []*StructColu
 func (t *StructTemplate) Generate(tableName string, tplColumns []*StructColumn) error {
 	tpl := template.Must(template.New("sql2struct").Funcs(template.FuncMap{
 		"ToCamelCase": word.UnderscoreToUpperCamelCase,
-	}).Parse(t.strcutTpl))
+	}).Parse(t.structTpl))
 
 	tplDB := StructTemplateDB{
 		TableName: tableName,
